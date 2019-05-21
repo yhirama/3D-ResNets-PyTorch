@@ -1,7 +1,9 @@
-from __future__ import print_function, division
+from __future__ import division, print_function
+
 import os
 import sys
 import subprocess
+
 
 def class_process(dir_path, dst_dir_path, class_name):
   class_path = os.path.join(dir_path, class_name)
@@ -14,7 +16,8 @@ def class_process(dir_path, dst_dir_path, class_name):
 
   for file_name in os.listdir(class_path):
     if '.avi' not in file_name:
-      continue
+        # continue
+        file_name = mp4_to_avi(file_name, class_path)
     name, ext = os.path.splitext(file_name)
     dst_directory_path = os.path.join(dst_class_path, name)
 
@@ -36,6 +39,16 @@ def class_process(dir_path, dst_dir_path, class_name):
     print(cmd)
     subprocess.call(cmd, shell=True)
     print('\n')
+
+
+def mp4_to_avi(file_name, class_path):
+    name = file_name.split('.')
+    avi_name = '{}.avi'.format(name[0])
+    cmd = 'ffmpeg -i {} {}'.format(os.path.join(class_path, file_name),
+                                   os.path.join(class_path, avi_name))
+    subprocess.call(cmd, shell=True)
+    return avi_name
+
 
 if __name__=="__main__":
   dir_path = sys.argv[1]

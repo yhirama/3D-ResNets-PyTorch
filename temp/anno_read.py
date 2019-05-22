@@ -40,7 +40,7 @@ def read_path(num):
 if __name__=='__main__':
     train_list = [str(i)+'_'+str(j) for i in range(1, 21) for j in range(1, 4)]
     val_list = [str(i)+'_'+str(j) for i in range(21, 27) for j in range(1, 4)]
-    test_list = [str(i)+'_'+str(j) for i in range(27, 41) for j in range(1, 4)]
+    test_list = [str(i)+'_'+str(j) for i in range(27, 31) for j in range(1, 4)]
 
     path = []
     for i in train_list:

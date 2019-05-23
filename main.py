@@ -1,26 +1,27 @@
 import os
 import sys
 import json
-import numpy as np
-import torch
-from torch import nn
-from torch import optim
-from torch.optim import lr_scheduler
+import test
 
+from mean import get_mean, get_std
 from opts import parse_opts
 from model import generate_model
-from mean import get_mean, get_std
-from spatial_transforms import (
-    Compose, Normalize, Scale, CenterCrop, CornerCrop, MultiScaleCornerCrop,
-    MultiScaleRandomCrop, RandomHorizontalFlip, ToTensor)
-from temporal_transforms import LoopPadding, TemporalRandomCrop
-from target_transforms import ClassLabel, VideoID
-from target_transforms import Compose as TargetCompose
-from dataset import get_training_set, get_validation_set, get_test_set
-from utils import Logger
 from train import train_epoch
+from utils import Logger
+from dataset import get_test_set, get_training_set, get_validation_set
 from validation import val_epoch
-import test
+from target_transforms import ClassLabel, Compose as TargetCompose, VideoID
+from spatial_transforms import (CenterCrop, Compose, CornerCrop,
+                                MultiScaleCornerCrop, MultiScaleRandomCrop,
+                                Normalize, RandomHorizontalFlip, Scale, ToTensor)
+from temporal_transforms import LoopPadding, TemporalRandomCrop
+
+import numpy as np
+
+import torch
+
+from torch import nn, optim
+from torch.optim import lr_scheduler
 
 if __name__ == '__main__':
     opt = parse_opts()

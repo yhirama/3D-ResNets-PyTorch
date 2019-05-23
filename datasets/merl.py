@@ -1,13 +1,15 @@
-import torch
-import torch.utils.data as data
-from PIL import Image
 import os
+import copy
+import json
 import math
 import functools
-import json
-import copy
 
 from utils import load_value_file
+
+import torch
+import torch.utils.data as data
+
+from PIL import Image
 
 
 def pil_loader(path):
@@ -20,6 +22,7 @@ def pil_loader(path):
 def accimage_loader(path):
     try:
         import accimage
+
         return accimage.Image(path)
     except IOError:
         # Potentially a decoding problem, fall back to PIL.Image
@@ -28,6 +31,7 @@ def accimage_loader(path):
 
 def get_default_image_loader():
     from torchvision import get_image_backend
+
     if get_image_backend() == 'accimage':
         return accimage_loader
     else:

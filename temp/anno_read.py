@@ -13,7 +13,7 @@ from scipy import io
 
 4    Inspect Shelf (look at shelf while not touching and not reaching for the shelf)
 """
-
+label_list = ['Reach-To-Shelf', 'Retract-From-Shelf', 'Hand-In-Shelf', 'Inspect-Product', 'Inspect-Shelf']
 def read_path(num):
     path = []
     matdata = io.loadmat('../data/Labels_MERL_Shopping_dataset/{}_label.mat'.
@@ -30,12 +30,13 @@ def read_path(num):
             print(data)
         for j in data:
             for k in range(j[0], j[1]):
-                path.append('all/{}_crop/image_{}.jpg {}'.format(num,
+                path.append('{}/{}_crop/image_{}.jpg {}'.format(label_list[i], num,
                                                                  str(k).zfill(5),
                                                                  i+1))
                 print(str(k).zfill(5))
 
     return path
+
 
 if __name__=='__main__':
     train_list = [str(i)+'_'+str(j) for i in range(1, 21) for j in range(1, 4)]
@@ -46,19 +47,19 @@ if __name__=='__main__':
     for i in train_list:
         path.extend(read_path(i))
     path = '\n'.join(path)
-    with open('../data/merl_label/train.txt', 'w') as f:
+    with open('../data/merl_label/train_list.txt', 'w') as f:
         f.writelines(path)
  
     path = []
     for i in val_list:
         path.extend(read_path(i))
     path = '\n'.join(path)
-    with open('../data/merl_label/val.txt', 'w') as f:
+    with open('../data/merl_label/val_list.txt', 'w') as f:
         f.writelines(path)
  
     path = []
     for i in test_list:
         path.extend(read_path(i))
     path = '\n'.join(path)
-    with open('../data/merl_label/test.txt', 'w') as f:
+    with open('../data/merl_label/test_list.txt', 'w') as f:
         f.writelines(path)

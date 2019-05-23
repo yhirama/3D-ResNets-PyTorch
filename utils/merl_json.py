@@ -15,7 +15,7 @@ def convert_csv_to_dict(csv_path, subset):
         row = data.ix[i, :]
         slash_rows = data.ix[i, 0].split('/')
         class_name = slash_rows[0]
-        basename = slash_rows[1].split('.')[0]
+        basename = class_name + '/' + slash_rows[1].split('.')[0]
         
         keys.append(basename)
         key_labels.append(class_name)
@@ -56,9 +56,9 @@ if __name__ == '__main__':
     csv_dir_path = sys.argv[1]
 
     label_csv_path = os.path.join(csv_dir_path, 'classInd.txt')
-    train_csv_path = os.path.join(csv_dir_path, 'train.txt')
-    val_csv_path = os.path.join(csv_dir_path, 'test.txt')
-    dst_json_path = os.path.join(csv_dir_path, 'metadata.json')
+    train_csv_path = os.path.join(csv_dir_path, 'train_list.txt')
+    val_csv_path = os.path.join(csv_dir_path, 'test_list.txt')
+    dst_json_path = os.path.join(csv_dir_path, 'metadata1.json')
 
     convert_ucf101_csv_to_activitynet_json(label_csv_path, train_csv_path,
                                            val_csv_path, dst_json_path)

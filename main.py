@@ -46,7 +46,7 @@ if __name__ == '__main__':
     torch.manual_seed(opt.manual_seed)
 
     model, parameters = generate_model(opt)
-    print(model)
+    # print(model)
     criterion = nn.CrossEntropyLoss()
     if not opt.no_cuda:
         criterion = criterion.cuda()

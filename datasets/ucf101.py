@@ -81,6 +81,8 @@ def get_video_names_and_annotations(data, subset):
 
 def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
                  sample_duration):
+    print(subset)
+    print(n_samples_for_each_video)
     data = load_annotation_data(annotation_path)
     video_names, annotations = get_video_names_and_annotations(data, subset)
     class_to_idx = get_class_labels(data)

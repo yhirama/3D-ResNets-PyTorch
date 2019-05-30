@@ -45,6 +45,7 @@ def video_loader(video_dir_path, frame_indices, image_loader):
         if os.path.exists(image_path):
             video.append(image_loader(image_path))
         else:
+            print("error")
             return video
 
     return video
@@ -77,10 +78,20 @@ def get_video_names_and_annotations(data, subset):
         this_subset = value['subset']
         if this_subset == subset:
             label = value['annotations']['label']
-            video_names.append('{}/{}'.format(label, key))
+            video_names.append('{}'.format(key))
             annotations.append(value['annotations'])
 
     return video_names, annotations
+
+
+def load_id(video_path):
+    id_list = []
+    img_names = os.listdir(video_path)
+    for name in img_names:
+        if "jpg" in name:
+            id = name.split("_")[1].strip(".jpg")
+            id_list.append(int(id))
+    return id_list
 
 
 def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
@@ -94,10 +105,11 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
 
     dataset = []
     for i in range(len(video_names)):
-        if i % 1000 == 0:
-            print('dataset loading [{}/{}]'.format(i, len(video_names)))
-
         video_path = os.path.join(root_path, video_names[i])
+        id_list = load_id(video_path)
+        if i % 50 == 0:
+            print('dataset loading [{}/{}] {}'.format(i, len(video_names), len(dataset)))
+
         if not os.path.exists(video_path):
             continue
 
@@ -112,27 +124,23 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
             'video': video_path,
             'segment': [begin_t, end_t],
             'n_frames': n_frames,
-            'video_id': video_names[i].split('/')[1]
+            'video_id': video_names[i]#.split('/')[1]
         }
         if len(annotations) != 0:
             sample['label'] = class_to_idx[annotations[i]['label']]
         else:
             sample['label'] = -1
 
-        if n_samples_for_each_video == 1:
-            sample['frame_indices'] = list(range(1, n_frames + 1))
-            dataset.append(sample)
-        else:
-            if n_samples_for_each_video > 1:
-                step = max(1,
-                           math.ceil((n_frames - 1 - sample_duration) /
-                                     (n_samples_for_each_video - 1)))
+        for j in id_list:
+            for i in range(j, j+sample_duration):
+                if i not in id_list:
+                    # print("skip")
+                    break
             else:
-                step = sample_duration
-            for j in range(1, n_frames, step):
+                # print("success")
                 sample_j = copy.deepcopy(sample)
                 sample_j['frame_indices'] = list(
-                    range(j, min(n_frames + 1, j + sample_duration)))
+                    range(j, j + sample_duration))
                 dataset.append(sample_j)
 
     return dataset, idx_to_class
@@ -163,11 +171,12 @@ class MERL(data.Dataset):
                  spatial_transform=None,
                  temporal_transform=None,
                  target_transform=None,
-                 sample_duration=16,
+                 sample_duration=64,
                  get_loader=get_default_video_loader):
 
         self.data, self.class_names = make_dataset(
-            root_path, annotation_path, subset, n_samples_for_each_video,
+            # root_path, annotation_path, subset, n_samples_for_each_video,
+            root_path, annotation_path, subset, 1,
             sample_duration)
 
         self.spatial_transform = spatial_transform
@@ -187,6 +196,8 @@ class MERL(data.Dataset):
         frame_indices = self.data[index]['frame_indices']
         if self.temporal_transform is not None:
             frame_indices = self.temporal_transform(frame_indices)
+        #print(path)
+        #print(frame_indices)
         clip = self.loader(path, frame_indices)
         if self.spatial_transform is not None:
             self.spatial_transform.randomize_parameters()

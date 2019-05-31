@@ -28,6 +28,8 @@ RUN CHAINER_BUILD_CHAINERX=1 CHAINERX_BUILD_CUDA=1 pip3 install --no-cache-dir \
 	pandas
 
 
+RUN pip3 install --upgrade pip
+
 RUN pip3 install --no-cache-dir \
 	matplotlib \
 	torch torchvision

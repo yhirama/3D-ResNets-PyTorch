@@ -171,7 +171,7 @@ class MERL(data.Dataset):
                  spatial_transform=None,
                  temporal_transform=None,
                  target_transform=None,
-                 sample_duration=64,
+                 sample_duration=16,
                  get_loader=get_default_video_loader):
 
         self.data, self.class_names = make_dataset(

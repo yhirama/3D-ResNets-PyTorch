@@ -9,8 +9,8 @@ import subprocess
 def class_process(root_path):
     root_path = pathlib.Path(root_path)
     for class_path in root_path.iterdir():
-	for cam_path in class_path.iterdir():
-	    cam_dir = pathlib.Path(cam_path)
+        for cam_path in class_path.iterdir():
+            cam_dir = pathlib.Path(cam_path)
             for time_dir in cam_dir.iterdir():
                 if not os.path.isdir(time_dir):
                     return

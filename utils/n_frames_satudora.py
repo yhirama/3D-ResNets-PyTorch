@@ -16,9 +16,9 @@ def class_process(root_path):
                     return
                 img_path = pathlib.Path(time_dir, "images")
 
+                image_indices = []
                 for file_name in img_path.iterdir():
-                    image_indices = []
-                    if 'jpg' not in file_name:
+                    if 'jpg' not in str(file_name):
                         continue
                     image_indices.append(file_name)
 

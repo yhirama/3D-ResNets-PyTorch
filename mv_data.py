@@ -23,14 +23,14 @@ def read_anno(root_path):
                                                   file_name + ".jpg")))
                 if label == 0:
                     output_path = str(pathlib.Path(
-                        "/mnt/hdd3tb/action_recog/shelf",
+                        "/mnt/hdd3tb/action_recog/img/shelf",
                         cam_dir.stem,
                         time_dir.stem,
                         "images"
                     ))
                 elif label == 1:
                     output_path = str(pathlib.Path(
-                        "/mnt/hdd3tb/action_recog/others",
+                        "/mnt/hdd3tb/action_recog/img/others",
                         cam_dir.stem,
                         time_dir.stem,
                         "images"

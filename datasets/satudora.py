@@ -89,8 +89,8 @@ def load_id(video_path):
     img_names = os.listdir(video_path)
     for name in img_names:
         if "jpg" in name:
-            id = name.split("_")[1].strip(".jpg")
-            id_list.append(int(id))
+            id = name.strip(".jpg")
+            id_list.append(id)
     return id_list
 
 
@@ -132,17 +132,17 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
             sample['label'] = -1
 
         for j in id_list:
-            for i in range(j, j+sample_duration):
-                if i not in id_list:
-                    # print("skip")
+            date, nframe = j.split("_")
+            for i in range(int(nframe), int(nframe)+sample_duration):
+                if date + "_" + str(i).zfill(4) not in id_list:
                     break
             else:
-                # print("success")
+                print("success")
                 sample_j = copy.deepcopy(sample)
                 sample_j['frame_indices'] = list(
-                    range(j, j + sample_duration))
+                    range(int(nframe), int(nframe) + sample_duration))
                 dataset.append(sample_j)
-
+    print("data num {}".format(len(dataset)))
     return dataset, idx_to_class
 
 
@@ -171,7 +171,7 @@ class SATUDORA(data.Dataset):
                  spatial_transform=None,
                  temporal_transform=None,
                  target_transform=None,
-                 sample_duration=16,
+                 sample_duration=1,
                  get_loader=get_default_video_loader):
 
         self.data, self.class_names = make_dataset(

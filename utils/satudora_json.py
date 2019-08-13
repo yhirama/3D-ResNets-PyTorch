@@ -15,7 +15,8 @@ def convert_csv_to_dict(csv_path, subset):
         row = data.ix[i, :]
         slash_rows = data.ix[i, 0].split('/')
         class_name = slash_rows[5]
-        basename = class_name + '/' + slash_rows[-1].split('.')[0]
+        basename = class_name + '/' + slash_rows[6] + "/" \
++ slash_rows[7] + "/images" # + slash_rows[-1].split('.')[0]
         
         keys.append(basename)
         key_labels.append(class_name)

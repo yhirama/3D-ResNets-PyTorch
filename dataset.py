@@ -1,4 +1,5 @@
 from datasets.merl import MERL
+from datasets.satudora import SATUDORA
 from datasets.hmdb51 import HMDB51
 from datasets.ucf101 import UCF101
 from datasets.kinetics import Kinetics

@@ -41,7 +41,7 @@ def get_default_image_loader():
 def video_loader(video_dir_path, frame_indices, image_loader):
     video = []
     for i in frame_indices:
-        image_path = os.path.join(video_dir_path, 'image_{:05d}.jpg'.format(i))
+        image_path = os.path.join(video_dir_path, '{}.jpg'.format(i))
         if os.path.exists(image_path):
             video.append(image_loader(image_path))
         else:
@@ -104,10 +104,11 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
         idx_to_class[label] = name
 
     dataset = []
+    class_weight = {}
     for i in range(len(video_names)):
         video_path = os.path.join(root_path, video_names[i])
         id_list = load_id(video_path)
-        if i % 50 == 0:
+        if i % 2 == 0:
             print('dataset loading [{}/{}] {}'.format(i, len(video_names), len(dataset)))
 
         if not os.path.exists(video_path):
@@ -128,22 +129,30 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
         }
         if len(annotations) != 0:
             sample['label'] = class_to_idx[annotations[i]['label']]
+            class_weight.setdefault(sample['label'], 0)
         else:
             sample['label'] = -1
+            class_weight.setdefault(sample['label'], 0)
 
         for j in id_list:
+            temp = []
             date, nframe = j.split("_")
-            for i in range(int(nframe), int(nframe)+sample_duration):
+            for i in range(int(nframe), int(nframe)+sample_duration*5, 5):
+                temp.append(date + "_" + str(i).zfill(4))
                 if date + "_" + str(i).zfill(4) not in id_list:
                     break
             else:
-                print("success")
+                # print("success")
                 sample_j = copy.deepcopy(sample)
-                sample_j['frame_indices'] = list(
-                    range(int(nframe), int(nframe) + sample_duration))
+                sample_j['frame_indices'] = temp
+                class_weight[sample['label']] = class_weight[sample['label']] + 1
                 dataset.append(sample_j)
     print("data num {}".format(len(dataset)))
-    return dataset, idx_to_class
+    _sum = class_weight[0] + class_weight[1]
+    cw = [float(class_weight[1]/_sum), float(class_weight[0]/_sum)]
+    print(class_weight)
+    print(cw)
+    return dataset, idx_to_class, cw
 
 
 class SATUDORA(data.Dataset):
@@ -171,10 +180,10 @@ class SATUDORA(data.Dataset):
                  spatial_transform=None,
                  temporal_transform=None,
                  target_transform=None,
-                 sample_duration=1,
+                 sample_duration=3,
                  get_loader=get_default_video_loader):
 
-        self.data, self.class_names = make_dataset(
+        self.data, self.class_names, self.cw = make_dataset(
             # root_path, annotation_path, subset, n_samples_for_each_video,
             root_path, annotation_path, subset, 1,
             sample_duration)

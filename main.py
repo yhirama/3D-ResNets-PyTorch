@@ -39,7 +39,7 @@ if __name__ == '__main__':
     opt.arch = '{}-{}'.format(opt.model, opt.model_depth)
     opt.mean = get_mean(opt.norm_value, dataset=opt.mean_dataset)
     opt.std = get_std(opt.norm_value)
-    print(opt)
+    # print(opt)
     with open(os.path.join(opt.result_path, 'opts.json'), 'w') as opt_file:
         json.dump(vars(opt), opt_file)
 
@@ -47,9 +47,6 @@ if __name__ == '__main__':
 
     model, parameters = generate_model(opt)
     # print(model)
-    criterion = nn.CrossEntropyLoss()
-    if not opt.no_cuda:
-        criterion = criterion.cuda()
 
     if opt.no_mean_norm and not opt.std_norm:
         norm_method = Normalize([0, 0, 0], [1, 1, 1])
@@ -76,7 +73,6 @@ if __name__ == '__main__':
         target_transform = ClassLabel()
         training_data = get_training_set(opt, spatial_transform,
                                          temporal_transform, target_transform)
-        print(training_data[0])
         train_loader = torch.utils.data.DataLoader(
             training_data,
             batch_size=opt.batch_size,
@@ -134,10 +130,24 @@ if __name__ == '__main__':
 
     print('run')
     for i in range(opt.begin_epoch, opt.n_epochs + 1):
+        temp_weight_list = []
         if not opt.no_train:
+            temp_weight_list.extend(training_data.cw)
+            temp_weight_list.extend([0 for i in range(opt.n_classes-len(training_data.cw))])
+            weights = torch.tensor(temp_weight_list).cuda()
+            criterion = nn.CrossEntropyLoss(weight=weights)
+            if not opt.no_cuda:
+                criterion = criterion.cuda()
             train_epoch(i, train_loader, model, criterion, optimizer, opt,
                         train_logger, train_batch_logger)
+        temp_weight_list = []
         if not opt.no_val:
+            temp_weight_list.extend(validation_data.cw)
+            temp_weight_list.extend([0 for i in range(opt.n_classes-len(validation_data.cw))])
+            weights = torch.tensor(temp_weight_list.cw).cuda()
+            criterion = nn.CrossEntropyLoss(weight=weights)
+            if not opt.no_cuda:
+                criterion = criterion.cuda()
             validation_loss = val_epoch(i, val_loader, model, criterion, opt,
                                         val_logger)
 
